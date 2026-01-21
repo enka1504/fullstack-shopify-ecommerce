@@ -1,0 +1,65 @@
+.menu{
+    width: 100%;
+}
+
+.menu-item{
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    height: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    padding: 0.5rem;
+}
+
+/* Icon Button */
+.icon-button {
+    background-color: #484a4d;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: filter 300ms;
+  }
+  
+  .icon-button:hover {
+    filter: brightness(1.2);
+  }
+  
+  .icon-button svg { 
+    fill:  #dadce1;
+    width: 20px;
+    height: 20px;
+  }
+
+  /* CSSTransition classes  */
+.menu-primary-enter {
+    position: absolute;
+    transform: translateX(-110%);
+  }
+  .menu-primary-enter-active {
+    transform: translateX(0%);
+    transition: all 500ms ease;
+  }
+  .menu-primary-exit {
+    position: absolute;
+  }
+  .menu-primary-exit-active {
+    transform: translateX(-110%);
+    transition: all 500ms ease;
+  }
+  
+  
+  .menu-secondary-enter {
+    transform: translateX(110%);
+  }
+  .menu-secondary-enter-active {
+    transform: translateX(0%);
+    transition: all 500ms ease;
+  }
+  
+  .menu-secondary-exit-active {
+    transform: translateX(110%);
+    transition: all 500ms ease;
+  }
