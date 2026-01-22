@@ -34,28 +34,6 @@ const CARDS = [
     alt: "Green bottle",
   },
 ];
-function Dropdown({ label, children }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div
-      className={"dd" + (open ? " dd--open" : "")}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
-      <button
-        className="dd__btn"
-        onClick={() => setOpen((v) => !v)}
-        type="button"
-      >
-        {label} <span className="dd__caret">▾</span>
-      </button>
-
-      <div className="dd__menu">{children}</div>
-    </div>
-  );
-}
-
 function Icon({ name }) {
   // Tiny inline icons (no library needed)
   const common = { className: "icon", "aria-hidden": true };
