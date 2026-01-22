@@ -89,7 +89,7 @@ a {
   z-index: 10;
 }
 .header__inner {
-  max-width: 1200px;
+  max-width: 1366px;
   margin: 0 auto;
   padding: 14px 16px;
   display: grid;
@@ -185,12 +185,15 @@ a {
 
 /* Layout */
 .main {
-  max-width: 1200px;
+  width: 97vw;
   margin: 0 auto;
   padding: 18px 16px 60px;
   display: grid;
+  z-index: 22222222222222;
   grid-template-columns: 250px 1fr;
+  background-color: white;
   gap: 18px;
+  position: absolute;
 }
 
 /* Sidebar */
@@ -413,7 +416,8 @@ a {
 /* ✅ Product Grid Section */
 .productSection {
   margin: 0 auto;
-  padding: 20px 100px;
+  padding: 20px 0;
+  max-width: 1366px;
 }
 
 .productGrid {
@@ -623,12 +627,18 @@ a {
 
 /* ✅ Responsive */
 @media (max-width: 1024px) {
+  .productSection {
+    padding: 10px 20px;
+  }
   .productGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width: 768px) {
+  .productSection {
+    padding: 10px 20px;
+  }
   .productGrid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -639,6 +649,9 @@ a {
 }
 
 @media (max-width: 480px) {
+  .productSection {
+    padding: 10px 20px;
+  }
   .productGrid {
     grid-template-columns: 1fr;
   }
@@ -651,15 +664,6 @@ a {
 }
 
 .dd__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 6px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 13.5px;
-  color: rgba(0, 0, 0, 0.75);
 }
 
 .dd__btn:hover {
@@ -716,15 +720,33 @@ a {
   display: inline-flex;
 }
 
-@media (max-width: 1050px) {
+@media (max-width: 1246px) {
+  .header__actions {
+    justify-content: end;
+  }
   .nav--desktop {
     display: none;
   }
   .headerOnlyMobile {
     display: inline-grid;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translate(0, -50%);
   }
   .headerOnlyDesktop {
     display: none;
+  }
+  .header__inner {
+    position: relative;
+    display: flex;
+    justify-content: end;
+  }
+  .logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 
@@ -824,7 +846,7 @@ a {
   transition:
     opacity 180ms ease,
     transform 180ms ease;
-  z-index: 55;
+  z-index: 333333333333;
 }
 .mobilePanel--open {
   transform: translateY(0);

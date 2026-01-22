@@ -49,15 +49,6 @@ const Container = styled.div`
   &:hover {
     transform: translateY(-3px);
   }
-  @media (max-width: 768px) {
-    width: 45%;
-  }
-  @media (max-width: 480px) {
-    width: 100%;
-  }
-  @media (max-width: 320px) {
-    width: 300px;
-  }
 `;
 
 const Icon = styled.div`

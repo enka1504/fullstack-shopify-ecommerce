@@ -19,7 +19,7 @@ const Arrow = styled.div`
   border-radius: 50%;
   display: flex;
   justify-content: center;
-  align-item: center;
+  align-items: center;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -44,16 +44,20 @@ const Slide = styled.div`
   background-color: white;
 `;
 const ImgContainer = styled.div`
-  flex: 1;
+  flex: 3;
+  padding: 0 20px;
 `;
 
 const Image = styled.img`
-  height: 80%;
+  width: 100%;
 `;
 
 const InfoContainer = styled.div`
-  flex: 1;
-  padding: 50px;
+  flex: 2;
+  padding: 30px 20px;
+  @media (max-width: 1150px) {
+    display: none;
+  }
 `;
 
 const Title = styled.h1`
@@ -67,9 +71,13 @@ const Desc = styled.p`
 `;
 const Button = styled.button`
   padding: 10px;
-  font-size: 20px;
-  background-color: transparent;
+  font-size: 18px;
   cursor: pointer;
+  border-radius: 50px;
+  background: black;
+  color: white;
+  font-weight: 600;
+  font-family: sans-serif;
 `;
 const Slider = () => {
   const [slideIndex, setSlideIndex] = useState(0);
