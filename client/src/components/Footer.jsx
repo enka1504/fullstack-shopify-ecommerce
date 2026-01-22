@@ -83,7 +83,7 @@ const Footer = () => {
   return (
     <Container>
       <Left>
-        <Logo>SHA1APP.</Logo>
+        <Logo>Tony Billing</Logo>
         <Desc>
           There are majore variations of passages of loremn inpsum available ,
           but the majority has suffered an altercation in some forms by injected

@@ -32,7 +32,7 @@ export default function Topbar() {
     <div className="topbar">
       <div className="topbarWrapper">
         <div className="topLeft">
-          <span className="logo">sha1admin</span>
+          <span className="logo">TonyBilling</span>
         </div>
         <div className="topRight">
           <div className="topbarIconContainer">

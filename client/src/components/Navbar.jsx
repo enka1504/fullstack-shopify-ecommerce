@@ -1,10 +1,12 @@
 import { Badge } from "@material-ui/core";
 import { Search, ShoppingCartOutlined } from "@material-ui/icons";
-import React from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useState, React, useRef } from "react";
+import axios from "axios";
+import { API_URL } from "../Utils/Constants";
 
 const Container = styled.div`
   height: 60px;
@@ -62,8 +64,20 @@ const MenuItems = styled.div`
   margin-left: 25px;
   ${mobile({ fontSize: "12px", marginLeft: "10px" })}
 `;
-const Navbar = () => {
+const Navbar = ({ key, setProducts, setKeywords }) => {
   const quantity = useSelector((state) => state.cart.quantity);
+
+  const setKeyword = (value) => {
+    axios
+      .get(`${API_URL}/products?search=${value}`)
+      .then((response) => {
+        setProducts(response.data);
+        setKeywords(value);
+      })
+      .catch((error) => {
+        console.error("There was an error searching for products!", error);
+      });
+  };
   // console.log(cart);
   return (
     <Container>
@@ -71,16 +85,23 @@ const Navbar = () => {
         <Left>
           <Language>EN</Language>
           <SearchContainer>
-            <Input placeholder="Search" />
-            <Search style={{ color: "gray", fontSize: "16px" }} />
+            <Input
+              placeholder="Search"
+              onKeyUp={(e) => setKeyword(e.target.value)}
+            />
+            <Search />
           </SearchContainer>
         </Left>
         <Center>
-          <Logo>SHA1APP.</Logo>
+          <Logo>Tony Billing</Logo>
         </Center>
         <Right>
-        <Link to="/register" style={{textDecoration:"none"}}><MenuItems>REGISTER</MenuItems></Link>
-          <Link to="/login" style={{textDecoration:"none"}}><MenuItems>SIGN IN</MenuItems></Link>
+          <Link to="/register" style={{ textDecoration: "none" }}>
+            <MenuItems>REGISTER</MenuItems>
+          </Link>
+          <Link to="/login" style={{ textDecoration: "none" }}>
+            <MenuItems>SIGN IN</MenuItems>
+          </Link>
           <Link to="/cart">
             <MenuItems>
               <Badge badgeContent={quantity} color="primary">

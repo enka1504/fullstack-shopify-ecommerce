@@ -196,8 +196,6 @@ const Cart = () => {
     stripeToken && cart.total >= 1 && makeRequest();
   }, [stripeToken, cart, history, dispatch]);
 
- 
-
   const handleClearCart = () => {
     dispatch(clearCart());
   };
@@ -268,7 +266,7 @@ const Cart = () => {
               <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
             </SummaryItem>
             <StripeCheckout
-              name="SHA1APP Shop"
+              name="Tony Shop"
               image="https://avatars.githubusercontent.com/u/1486366?v=4"
               billingAddress
               shippingAddress

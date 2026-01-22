@@ -62,22 +62,67 @@ router.get("/find/:id", async (request, response) => {
 router.get("/", async (request, response) => {
   const qNew = request.query.new;
   const qCategory = request.query.category;
+  const search = request.query.search;
+
   try {
     let products;
 
     if (qNew) {
-      products = await Product.find().sort({ createdAt: -1 }).limit(1);
+      products = await Product.find(
+        search
+          ? {
+              $or: [
+                { title: { $regex: search, $options: "i" } },
+                { color: { $in: [search] } },
+                { desc: { $regex: search, $options: "i" } },
+                { size: { $in: [search] } },
+              ],
+            }
+          : {},
+      )
+        .sort({ createdAt: -1 })
+        .limit(1);
     } else if (qCategory) {
-      products = await Product.find({
-        categories: {
-          $in: [qCategory],
-        },
-      });
+      products = await Product.find(
+        search
+          ? {
+              categories: {
+                $in: [qCategory],
+              },
+              $and: [
+                {
+                  $or: [
+                    { title: { $regex: search, $options: "i" } },
+                    { color: { $in: [search] } },
+                    { desc: { $regex: search, $options: "i" } },
+                    { size: { $in: [search] } },
+                  ],
+                },
+              ],
+            }
+          : {},
+      );
     } else {
-      products = await Product.find();
+      products = await Product.find(
+        search
+          ? {
+              $or: [
+                { title: { $regex: search, $options: "i" } },
+                { color: { $in: [search] } },
+                { desc: { $regex: search, $options: "i" } },
+                { size: { $in: [search] } },
+              ],
+            }
+          : {},
+      );
+
+      console.log(products, "products");
+
+      response.status(200).json(products);
     }
-    response.status(200).json(products);
   } catch (error) {
+    console.log(error);
+
     response.status(500).json(error);
   }
 });
