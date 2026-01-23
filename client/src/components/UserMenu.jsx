@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./Example.css";
-
 export default function UserMenu({ isLoggedIn, user, onSignOut }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
