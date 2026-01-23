@@ -1,17 +1,153 @@
 import React, { useEffect, useRef, useState } from "react";
+
+/**
+ * ✅ UserMenu styles (in the same file)
+ * - Injected when component mounts
+ * - Removed when component unmounts
+ * - Scoped with .umWrap / .umMenu class names (your existing classes)
+ */
+const userMenuCss = `
+/* wrapper */
+.umWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+/* button */
+.umBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.umWrap:hover .umBtn {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.umAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.umIcon {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+/* menu dropdown */
+.umMenu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  min-width: 200px;
+  background: rgba(20, 22, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  z-index: 50;
+  animation: fadeInUp 0.14s ease-out;
+  transform-origin: top right;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* top area */
+.umTop {
+  padding: 12px 12px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.umName {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.umSub {
+  margin-top: 3px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* items */
+.umItem {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.umItem:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.umDanger {
+  color: rgba(248, 113, 113, 0.95);
+}
+
+.umDanger:hover {
+  background: rgba(248, 113, 113, 0.12);
+}
+`;
+
+function useInjectedStyle(cssText, id = "usermenu-css") {
+  useEffect(() => {
+    // Avoid duplicate <style> tag if component re-renders
+    let style = document.querySelector(`style[data-style-id="${id}"]`);
+
+    if (!style) {
+      style = document.createElement("style");
+      style.setAttribute("data-style-id", id);
+      style.textContent = cssText;
+      document.head.appendChild(style);
+    }
+
+    // Remove only if THIS component added it
+    return () => {
+      const existing = document.querySelector(`style[data-style-id="${id}"]`);
+      if (existing) existing.remove();
+    };
+  }, [cssText, id]);
+}
+
 export default function UserMenu({ isLoggedIn, user, onSignOut }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
   const closeTimerRef = useRef(null);
 
-  // Detect if device supports hover (desktop) vs touch (mobile)
+  // ✅ Inject CSS from the same file
+  useInjectedStyle(userMenuCss, "usermenu-css");
+
+  // Detect hover devices (desktop) vs touch (mobile)
   const canHover =
     typeof window !== "undefined" &&
     window.matchMedia &&
     window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
   function go(path) {
-    window.location.href = path; // or React Router navigate()
+    window.location.href = path; // or use React Router navigate()
   }
 
   function clearCloseTimer() {
@@ -59,7 +195,6 @@ export default function UserMenu({ isLoggedIn, user, onSignOut }) {
     <div
       className="umWrap"
       ref={wrapRef}
-      // Hover behavior ONLY on hover-capable devices
       onMouseEnter={() => {
         if (canHover) openMenu();
       }}
@@ -71,7 +206,6 @@ export default function UserMenu({ isLoggedIn, user, onSignOut }) {
         className="umBtn"
         aria-haspopup="menu"
         aria-expanded={open}
-        // Click/tap works for ALL devices (mobile + desktop)
         onClick={() => setOpen((v) => !v)}
       >
         {user?.avatarUrl ? (
@@ -87,7 +221,6 @@ export default function UserMenu({ isLoggedIn, user, onSignOut }) {
         <div
           className="umMenu"
           role="menu"
-          // keep it open when hovering inside menu (desktop)
           onMouseEnter={() => {
             if (canHover) openMenu();
           }}
