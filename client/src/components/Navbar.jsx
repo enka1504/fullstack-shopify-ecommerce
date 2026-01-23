@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../Utils/Constants";
+import UserMenu from "./UserMenu";
 
 const CARDS = [
   {
@@ -157,6 +158,9 @@ const Navbar = ({ key, setProducts, setKeywords }) => {
   const [openId, setOpenId] = useState(null); // desktop dropdowns
   const [mobileOpen, setMobileOpen] = useState(false); // hamburger panel
   const [mobileOpenId, setMobileOpenId] = useState(null); // mobile accordion section
+  const [user, setUser] = useState(null);
+  const token = localStorage.getItem("token");
+  const isLoggedIn = !!token;
 
   const headerRef = useRef(null);
 
@@ -170,6 +174,29 @@ const Navbar = ({ key, setProducts, setKeywords }) => {
     },
     true,
   );
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadMe() {
+      if (!token) return;
+      try {
+        const res = await fetch("/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted) setUser(data);
+      } catch {}
+    }
+    loadMe();
+    return () => (mounted = false);
+  }, [token]);
+
+  function signOut() {
+    localStorage.removeItem("token");
+    // if you store user in state globally, clear it too
+    setUser(null);
+  }
 
   // close mobile menu on Escape
   useEffect(() => {
@@ -306,11 +333,12 @@ const Navbar = ({ key, setProducts, setKeywords }) => {
 
           <Language>EN</Language>
           {/* keep your icons if you want */}
-          <Link to="/register">
+          {/* <Link to="/register">
             <button className="iconBtn" aria-label="Account">
               👤
             </button>
-          </Link>
+          </Link> */}
+          <UserMenu isLoggedIn={isLoggedIn} user={user} onSignOut={signOut} />
           <Link to="/cart">
             <button className="iconBtn" aria-label="Cart">
               👜
