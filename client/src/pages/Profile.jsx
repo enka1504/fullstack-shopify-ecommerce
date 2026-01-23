@@ -1,344 +1,422 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
 /**
- * ✅ Profile CSS (ONLY while Profile page is mounted)
- * - Injected into <head> on mount
- * - Removed on unmount
- * - Adds a body class to apply full-screen dark background ONLY on this page
+ * ✅ E-commerce dashboard UI
+ * - Single file: Profile.jsx only
+ * - CSS injected on mount, removed on unmount
+ * - Body background applied only on Profile
+ * - Styles scoped under .profileRoot so it won't affect other pages
  */
 const profileCss = `
-/* Full-screen background only for Profile page (body class toggled in JS) */
+/* Page background only on Profile */
 body.profilePageBody {
-  background: #0b0f19;
+  background: #0b1220; /* deep navy */
 }
 
-/* Root wrapper for scoping variables + styles */
-.profileRoot {
-  --bg: #0b0f19;
-  --card: rgba(255, 255, 255, 0.06);
-  --card2: rgba(255, 255, 255, 0.08);
-  --profile-text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.68);
-  --border: rgba(255, 255, 255, 0.14);
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --success: rgba(74, 222, 128, 0.18);
-  --successText: rgba(74, 222, 128, 0.95);
-  --error: rgba(248, 113, 113, 0.18);
-  --errorText: rgba(248, 113, 113, 0.95);
+/* Root */
+.profileRoot{
+  --bg: #0b1220;
+  --panel: #0f1b2d;
+  --card: #101f33;
+  --card2: #0f1b2d;
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.66);
+  --border: rgba(255,255,255,0.10);
+  --shadow: 0 10px 24px rgba(0,0,0,0.35);
+
+  --primary: #4f46e5;      /* indigo */
+  --primary2: #6d28d9;     /* purple */
+  --primaryHover: #4338ca;
+
+  --successBg: rgba(34,197,94,0.14);
+  --successText: rgba(134,239,172,0.95);
+  --errorBg: rgba(239,68,68,0.14);
+  --errorText: rgba(252,165,165,0.95);
+
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
 }
 
-/* Make the page fill the viewport and keep background consistent */
-.profileRoot .profile-content {
+/* Outer background */
+.profileRoot{
   min-height: 100vh;
-  padding-bottom: 60px;
-
   background:
-    radial-gradient(1200px 600px at 30% 10%, rgba(99, 102, 241, 0.22), transparent 60%),
-    radial-gradient(1000px 600px at 70% 20%, rgba(16, 185, 129, 0.18), transparent 60%),
+    radial-gradient(1000px 600px at 20% 0%, rgba(79,70,229,0.25), transparent 60%),
+    radial-gradient(900px 600px at 80% 10%, rgba(109,40,217,0.22), transparent 65%),
+    radial-gradient(1100px 700px at 60% 95%, rgba(16,185,129,0.12), transparent 60%),
     var(--bg);
 }
 
-.profileRoot .page {
-  max-width: 1100px;
-  padding: 24px 14px 50px;
+/* Page container */
+.profileRoot .page{
+  max-width: 1180px;
   margin: 0 auto;
+  padding: 22px 14px 60px;
 }
 
-@media (min-width: 680px) {
-  .profileRoot .page {
-    padding: 28px 16px 50px;
-  }
+@media (min-width: 720px){
+  .profileRoot .page{ padding: 28px 18px 70px; }
 }
 
-.profileRoot .profile-header {
-  margin-bottom: 18px;
+/* Top bar */
+.profileRoot .topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  background:transparent !important; 
+  margin-bottom: 16px;
 }
 
-.profileRoot .title {
-  margin: 0;
-  font-size: 30px;
+.profileRoot .titleBlock{
+  display:flex;
+  flex-direction:column;
+  gap: 4px;
+}
+
+.profileRoot .title{
+  margin:0;
+  font-size: 22px;
+  font-weight: 900;
   letter-spacing: 0.2px;
-  color: var(--profile-text);
 }
 
-.profileRoot .subtitle {
-  margin: 6px 0 0;
+.profileRoot .subtitle{
+  margin:0;
+  font-size: 13px;
   color: var(--muted);
 }
 
-.profileRoot .grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
+.profileRoot .topActions{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  flex-wrap:wrap;
 }
 
-@media (min-width: 980px) {
-  .profileRoot .grid {
-    grid-template-columns: 1.1fr 0.9fr;
-    align-items: start;
+/* Dashboard layout */
+.profileRoot .grid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 980px){
+  .profileRoot .grid{
+    grid-template-columns: 1.25fr 0.75fr;
+    align-items:start;
   }
 }
 
-.profileRoot .card {
-  background: linear-gradient(180deg, var(--card), rgba(255, 255, 255, 0.03));
+/* Card */
+.profileRoot .card{
+  background: linear-gradient(180deg, rgba(16,31,51,0.95), rgba(15,27,45,0.95));
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 16px;
   box-shadow: var(--shadow);
-  padding: 18px;
-  backdrop-filter: blur(10px);
+  padding: 16px;
 }
 
-.profileRoot .cardHeader { margin-bottom: 14px; }
-
-.profileRoot .cardTitle {
-  margin: 0;
-  font-size: 18px;
-  color: var(--profile-text);
+.profileRoot .cardHeader{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
-.profileRoot .cardHint {
+.profileRoot .cardTitle{
+  margin:0;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.profileRoot .cardHint{
   margin: 6px 0 0;
+  font-size: 12px;
   color: var(--muted);
+  line-height: 1.35;
+}
+
+.profileRoot .pill{
+  display:inline-flex;
+  align-items:center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.78);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Alerts */
+.profileRoot .alert{
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin: 10px 0 12px;
   font-size: 13px;
 }
 
-.profileRoot .alert {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 12px;
-  margin: 12px 0 14px;
-  font-size: 14px;
-}
-
-.profileRoot .alertSuccess {
-  background: var(--success);
+.profileRoot .alertSuccess{
+  background: var(--successBg);
   color: var(--successText);
-  border-color: rgba(74, 222, 128, 0.35);
+  border-color: rgba(34,197,94,0.25);
 }
 
-.profileRoot .alertError {
-  background: var(--error);
+.profileRoot .alertError{
+  background: var(--errorBg);
   color: var(--errorText);
-  border-color: rgba(248, 113, 113, 0.35);
+  border-color: rgba(239,68,68,0.25);
 }
 
-.profileRoot .form {
-  display: grid;
-  gap: 12px;
-}
+/* Form */
+.profileRoot .form{ display:grid; gap: 12px; }
 
-.profileRoot .row {
-  display: grid;
+.profileRoot .row{
+  display:grid;
   grid-template-columns: 1fr;
   gap: 12px;
 }
 
-@media (min-width: 680px) {
-  .profileRoot .row {
-    grid-template-columns: 1fr 1fr;
-  }
+@media (min-width: 720px){
+  .profileRoot .row{ grid-template-columns: 1fr 1fr; }
 }
 
-.profileRoot .field { display: grid; gap: 6px; }
+.profileRoot .field{ display:grid; gap: 6px; }
 
-.profileRoot .label {
+.profileRoot .label{
   font-size: 12px;
-  color: var(--muted);
+  color: rgba(255,255,255,0.72);
+  font-weight: 800;
+  letter-spacing: 0.2px;
 }
 
+/* Inputs */
 .profileRoot .input,
-.profileRoot .select {
+.profileRoot .select{
   width: 100%;
   padding: 11px 12px;
   border-radius: 12px;
-  border: 1px solid var(--border);
-  background: rgba(0, 0, 0, 0.25);
-  color: var(--profile-text);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(10, 16, 28, 0.55);
+  color: rgba(255,255,255,0.92);
   outline: none;
 }
 
+.profileRoot .input::placeholder{ color: rgba(255,255,255,0.40); }
+
 .profileRoot .input:focus,
-.profileRoot .select:focus {
-  border-color: rgba(99, 102, 241, 0.6);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+.profileRoot .select:focus{
+  border-color: rgba(79,70,229,0.55);
+  box-shadow: 0 0 0 4px rgba(79,70,229,0.18);
 }
 
-.profileRoot .select { cursor: pointer; }
+.profileRoot .select{ cursor:pointer; }
 
-.profileRoot .actions {
-  display: flex;
+/* Buttons */
+.profileRoot .actions{
+  display:flex;
   gap: 10px;
-  align-items: center;
-  margin-top: 4px;
   flex-wrap: wrap;
+  align-items:center;
+  margin-top: 2px;
 }
 
-/* ✅ Mobile improvement: buttons stack nicely */
-@media (max-width: 520px) {
-  .profileRoot .actions {
-    flex-direction: column;
-    align-items: stretch;
+@media (max-width: 520px){
+  .profileRoot .actions{
+    flex-direction:column;
+    align-items:stretch;
   }
   .profileRoot .actions button,
   .profileRoot .actions .btnSecondary,
-  .profileRoot .actions .btnPrimary {
+  .profileRoot .actions .btnPrimary,
+  .profileRoot .actions .btnGhost{
     width: 100%;
   }
 }
 
 .profileRoot .btnPrimary,
 .profileRoot .btnSecondary,
-.profileRoot .btnGhost {
+.profileRoot .btnGhost{
   border-radius: 12px;
   padding: 10px 12px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.14);
   cursor: pointer;
-  color: var(--profile-text);
-  font-weight: 600;
-  letter-spacing: 0.1px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
 }
 
-.profileRoot .btnPrimary {
-  background: rgba(99, 102, 241, 0.85);
-  border-color: rgba(99, 102, 241, 0.65);
+.profileRoot .btnPrimary{
+  color: #fff;
+  border: 1px solid rgba(79,70,229,0.45);
+  background: linear-gradient(90deg, var(--primary), var(--primary2));
 }
-.profileRoot .btnPrimary:hover { filter: brightness(1.05); }
+.profileRoot .btnPrimary:hover{ filter: brightness(1.05); }
 
-.profileRoot .btnSecondary { background: rgba(255, 255, 255, 0.08); }
-.profileRoot .btnSecondary:hover { background: rgba(255, 255, 255, 0.12); }
+.profileRoot .btnSecondary{
+  color: rgba(255,255,255,0.90);
+  background: rgba(255,255,255,0.06);
+}
+.profileRoot .btnSecondary:hover{ background: rgba(255,255,255,0.09); }
 
-.profileRoot .btnGhost {
+.profileRoot .btnGhost{
   background: transparent;
-  color: var(--muted);
+  border-color: transparent;
+  color: rgba(255,255,255,0.70);
 }
-.profileRoot .btnGhost:hover {
-  color: var(--profile-text);
-  background: rgba(255, 255, 255, 0.06);
+.profileRoot .btnGhost:hover{
+  color: rgba(255,255,255,0.92);
+  background: rgba(255,255,255,0.06);
 }
 
-.profileRoot .avatarRow {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  padding: 10px 0 6px;
+/* Avatar header row */
+.profileRoot .avatarRow{
+  display:flex;
+  gap: 12px;
+  align-items:center;
   flex-wrap: wrap;
+  padding: 6px 0 2px;
 }
 
-.profileRoot .avatarWrap {
-  width: 74px;
-  height: 74px;
+.profileRoot .avatarWrap{
+  width: 68px;
+  height: 68px;
   border-radius: 16px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
   overflow: hidden;
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
+  display:grid;
+  place-items:center;
 }
 
-.profileRoot .avatarImg { width: 100%; height: 100%; object-fit: cover; }
+.profileRoot .avatarImg{ width:100%; height:100%; object-fit:cover; }
 
-.profileRoot .avatarFallback {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-size: 28px;
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.9);
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(16, 185, 129, 0.25));
+.profileRoot .avatarFallback{
+  width:100%;
+  height:100%;
+  display:grid;
+  place-items:center;
+  font-size: 22px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.92);
+  background: linear-gradient(135deg, rgba(79,70,229,0.35), rgba(16,185,129,0.18));
 }
 
-.profileRoot .avatarActions {
-  display: flex;
+.profileRoot .avatarActions{
+  display:flex;
   gap: 10px;
-  align-items: center;
+  align-items:center;
   flex-wrap: wrap;
 }
 
-.profileRoot .fileInput { display: none; }
+.profileRoot .fileInput{ display:none; }
 
-.profileRoot .smallText { font-size: 12px; color: var(--muted); }
+.profileRoot .smallText{
+  font-size: 12px;
+  color: rgba(255,255,255,0.66);
+}
 
-.profileRoot .toggleRow { display: flex; justify-content: flex-end; }
+/* Password lock */
+.profileRoot .toggleRow{
+  display:flex;
+  justify-content:flex-end;
+}
 
-.profileRoot .checkbox {
-  display: flex;
+.profileRoot .checkbox{
+  display:flex;
   gap: 8px;
-  align-items: center;
-  color: var(--muted);
+  align-items:center;
+  color: rgba(255,255,255,0.70);
   font-size: 13px;
 }
 
-.profileRoot .checkbox input { transform: translateY(1px); }
+.profileRoot .lockBox{
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(255,255,255,0.04);
+}
 
+.profileRoot .lockClosed{ opacity: 0.78; }
+.profileRoot .lockOpen{
+  opacity: 1;
+  border-color: rgba(34,197,94,0.26);
+  background: rgba(34,197,94,0.06);
+}
+
+.profileRoot .lockHeader{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  margin-bottom: 10px;
+}
+
+.profileRoot .lockIcon{ font-size: 18px; }
+
+.profileRoot .lockTitle{
+  font-weight: 900;
+  color: rgba(255,255,255,0.92);
+}
+
+.profileRoot .lockHint{
+  margin-top: 2px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.66);
+}
+
+/* Skeleton */
 .profileRoot .skeletonTitle,
-.profileRoot .skeletonRow {
+.profileRoot .skeletonRow{
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255,255,255,0.08);
   position: relative;
   overflow: hidden;
 }
 
-.profileRoot .skeletonTitle {
+.profileRoot .skeletonTitle{
   height: 22px;
-  width: 240px;
+  width: 220px;
   margin-bottom: 14px;
 }
-.profileRoot .skeletonRow {
+.profileRoot .skeletonRow{
   height: 44px;
   width: 100%;
   margin-bottom: 10px;
 }
 
 .profileRoot .skeletonTitle::after,
-.profileRoot .skeletonRow::after {
+.profileRoot .skeletonRow::after{
   content: "";
   position: absolute;
   inset: 0;
   transform: translateX(-60%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent);
   animation: shimmer 1.15s infinite;
 }
 
-@keyframes shimmer {
-  0% { transform: translateX(-60%); }
-  100% { transform: translateX(60%); }
+@keyframes shimmer{
+  0%{ transform: translateX(-60%); }
+  100%{ transform: translateX(60%); }
 }
 
-.profileRoot .lockBox {
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.04);
+.profileRoot .input:disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
 }
-
-.profileRoot .lockClosed { opacity: 0.75; }
-.profileRoot .lockOpen { opacity: 1; border-color: rgba(74, 222, 128, 0.35); }
-
-.profileRoot .lockHeader {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.profileRoot .lockIcon { font-size: 18px; }
-.profileRoot .lockTitle { font-weight: 700; color: var(--profile-text); }
-.profileRoot .lockHint { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-.profileRoot .input:disabled { opacity: 0.6; cursor: not-allowed; }
 `;
 
+/** Inject + remove styles for this page only */
 function ProfileStyles() {
   useEffect(() => {
-    // Inject CSS
     const style = document.createElement("style");
     style.setAttribute("data-profile-css", "true");
     style.textContent = profileCss;
     document.head.appendChild(style);
 
-    // Add body class for full-screen background (only on Profile)
     document.body.classList.add("profilePageBody");
 
     return () => {
@@ -371,11 +449,9 @@ async function apiFetch(path, options = {}) {
 
   let data = null;
   const contentType = res.headers.get("content-type") || "";
-  if (contentType.includes("application/json")) {
+  if (contentType.includes("application/json"))
     data = await res.json().catch(() => null);
-  } else {
-    data = await res.text().catch(() => null);
-  }
+  else data = await res.text().catch(() => null);
 
   if (!res.ok) {
     const msg =
@@ -384,7 +460,6 @@ async function apiFetch(path, options = {}) {
       `Request failed (${res.status})`;
     throw new Error(msg);
   }
-
   return data;
 }
 
@@ -634,21 +709,34 @@ export default function ProfilePage() {
       <ProfileStyles />
 
       <div className="page profile-content">
-        <header className="profile-header">
-          <h1 className="title">Profile</h1>
-          <p className="subtitle">
-            Update your account info and change your password.
-          </p>
-        </header>
+        <div className="topbar">
+          <div className="titleBlock">
+            <h1 className="title">Account Settings</h1>
+            <p className="subtitle">
+              Manage profile info, avatar, and password.
+            </p>
+          </div>
+
+          <div className="topActions">
+            <Link to="/">
+              <span className="pill">🛒 Dashboard</span>
+            </Link>
+            <span className="pill">⚡ Secure</span>
+          </div>
+        </div>
 
         <div className="grid">
           {/* Profile Card */}
           <section className="card">
             <div className="cardHeader">
-              <h2 className="cardTitle">User Information</h2>
-              <p className="cardHint">
-                Edit your details and click “Update Profile”.
-              </p>
+              <div>
+                <h2 className="cardTitle">Customer Profile</h2>
+                <p className="cardHint">
+                  Keep your account details up-to-date for order updates and
+                  support.
+                </p>
+              </div>
+              <span className="pill">👤 Profile</span>
             </div>
 
             {profileMsg.text ? (
@@ -693,7 +781,7 @@ export default function ProfilePage() {
                         setProfileMsg({ type: "", text: "" });
                       }}
                     >
-                      Remove selection
+                      Remove
                     </button>
                   ) : (
                     <span className="smallText">
@@ -755,7 +843,7 @@ export default function ProfilePage() {
 
               <div className="actions">
                 <button className="btnPrimary" type="submit">
-                  Update Profile
+                  Save Changes
                 </button>
               </div>
             </form>
@@ -764,10 +852,13 @@ export default function ProfilePage() {
           {/* Password Card */}
           <section className="card">
             <div className="cardHeader">
-              <h2 className="cardTitle">Change Password</h2>
-              <p className="cardHint">
-                Use a strong password (8+ chars recommended).
-              </p>
+              <div>
+                <h2 className="cardTitle">Security</h2>
+                <p className="cardHint">
+                  Verify your current password before setting a new one.
+                </p>
+              </div>
+              <span className="pill">🔐 Security</span>
             </div>
 
             {passwordMsg.text ? (
@@ -819,7 +910,7 @@ export default function ProfilePage() {
               >
                 <div className="lockHeader">
                   <span className="lockIcon" aria-hidden="true">
-                    {passwordVerified ? "🔓" : "🔒"}
+                    {passwordVerified ? "✅" : "🔒"}
                   </span>
                   <div>
                     <div className="lockTitle">
@@ -827,8 +918,8 @@ export default function ProfilePage() {
                     </div>
                     <div className="lockHint">
                       {passwordVerified
-                        ? "Set your new password below."
-                        : "Verify current password to unlock."}
+                        ? "Now you can set a new password."
+                        : "Verify to unlock the new password fields."}
                     </div>
                   </div>
                 </div>
@@ -875,7 +966,7 @@ export default function ProfilePage() {
                     type="submit"
                     disabled={changing}
                   >
-                    {changing ? "Changing..." : "Change Password"}
+                    {changing ? "Updating..." : "Update Password"}
                   </button>
                 )}
 
@@ -890,7 +981,7 @@ export default function ProfilePage() {
                     setPasswordMsg({ type: "", text: "" });
                   }}
                 >
-                  Clear
+                  Reset
                 </button>
               </div>
             </form>
