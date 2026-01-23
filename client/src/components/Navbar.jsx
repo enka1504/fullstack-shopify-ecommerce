@@ -294,6 +294,9 @@ const Navbar = ({ key, setProducts, setKeywords }) => {
             </a>
           </NavDropdown>
 
+          <Link to="/about">
+            <div className="nav__cta">About</div>
+          </Link>
           <a
             className="nav__cta"
             href="#deal"
