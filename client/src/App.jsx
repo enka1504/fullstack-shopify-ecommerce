@@ -4,7 +4,7 @@ import Product from "./pages/Product";
 import Regsiter from "./pages/Register";
 import Login from "./pages/Login";
 import Cart from "./pages/Cart";
-import Example from "./pages/Example";
+import About from "./pages/About";
 import {
   BrowserRouter as Router,
   Switch,
@@ -32,8 +32,8 @@ const App = () => {
         <Route path="/cart">
           <Cart />
         </Route>
-        <Route path="/example">
-          <Example />
+        <Route path="/about">
+          <About />
         </Route>
         <Route path="/success">
           <Success />

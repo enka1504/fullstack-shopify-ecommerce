@@ -91,7 +91,7 @@ a {
 .header__inner {
   max-width: 1366px;
   margin: 0 auto;
-  padding: 14px 16px;
+  padding: 10px 16px;
   display: grid;
   grid-template-columns: 140px 1fr auto;
   gap: 16px;
