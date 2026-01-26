@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "i18next": "^25.8.0",
+    "react-i18next": "^16.5.3"
+  }
+}
