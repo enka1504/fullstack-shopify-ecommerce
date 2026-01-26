@@ -8,6 +8,69 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../Utils/Constants";
 import UserMenu from "./UserMenu";
+import i18n from "../assets/i18n";
+
+function FlagUS(props) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+      <rect width="24" height="24" rx="6" fill="#fff" />
+      <path
+        d="M3 6h18v2H3V6zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"
+        fill="#D32F2F"
+      />
+      <path d="M3 6h9v8H3V6z" fill="#1E3A8A" />
+      <path
+        d="M4.2 7.2h1v1h-1v-1zm2 0h1v1h-1v-1zm2 0h1v1h-1v-1zm-4 2h1v1h-1v-1zm2 0h1v1h-1v-1zm2 0h1v1h-1v-1z"
+        fill="#fff"
+      />
+    </svg>
+  );
+}
+
+function FlagRS(props) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+      <rect width="24" height="24" rx="6" fill="#fff" />
+      <path d="M2.5 6.5h19v4h-19v-4z" fill="#D32F2F" />
+      <path d="M2.5 10.5h19v3h-19v-3z" fill="#1E3A8A" />
+      <path d="M2.5 13.5h19v4h-19v-4z" fill="#fff" />
+    </svg>
+  );
+}
+
+function FlagCN(props) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+      <rect width="24" height="24" rx="6" fill="#D32F2F" />
+      <path
+        d="M7 7.5l.7 2.2 2.3.02-1.9 1.35.7 2.2L7 12.1l-1.8 1.37.7-2.2L4 9.92l2.3-.02L7 7.5z"
+        fill="#FBBF24"
+      />
+      <circle cx="12.7" cy="7.6" r="0.6" fill="#FBBF24" />
+      <circle cx="14.1" cy="9.2" r="0.6" fill="#FBBF24" />
+      <circle cx="14.1" cy="11.1" r="0.6" fill="#FBBF24" />
+      <circle cx="12.8" cy="12.6" r="0.6" fill="#FBBF24" />
+    </svg>
+  );
+}
+
+function FlagES(props) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+      <rect width="24" height="24" rx="6" fill="#fff" />
+      <path d="M2.5 6.5h19v4.2h-19V6.5z" fill="#C62828" />
+      <path d="M2.5 10.7h19v2.6h-19v-2.6z" fill="#FBBF24" />
+      <path d="M2.5 13.3h19v4.2h-19v-4.2z" fill="#C62828" />
+    </svg>
+  );
+}
+
+const LANGS = [
+  { code: "en", label: "English", Flag: FlagUS },
+  { code: "sr", label: "Srpski", Flag: FlagRS },
+  { code: "zh", label: "中文", Flag: FlagCN },
+  { code: "es", label: "Español", Flag: FlagES },
+];
 
 const CARDS = [
   {
@@ -140,6 +203,174 @@ function useOnClickOutside(ref, handler, when = true) {
     };
   }, [ref, handler, when]);
 }
+
+function LanguageModalExcellent({ open, onClose, currentLang, onSelect }) {
+  const panelRef = useRef(null);
+  const searchRef = useRef(null);
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return LANGS;
+    return LANGS.filter(
+      (l) =>
+        l.label.toLowerCase().includes(q) || l.code.toLowerCase().includes(q),
+    );
+  }, [query]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    setQuery("");
+    // focus search after open (small delay so animation doesn't block focus)
+    const t = setTimeout(() => searchRef.current?.focus(), 80);
+
+    function onKeyDown(e) {
+      if (e.key === "Escape") onClose();
+    }
+    function onMouseDown(e) {
+      if (panelRef.current && !panelRef.current.contains(e.target)) onClose();
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("mousedown", onMouseDown);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("mousedown", onMouseDown);
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+
+      {/* Panel (✅ slide-up animation) */}
+      <div
+        ref={panelRef}
+        className="
+          relative w-full max-w-md overflow-hidden rounded-3xl
+          border border-white/20 bg-white/80 shadow-2xl backdrop-blur-xl
+          dark:border-white/10 dark:bg-zinc-900/80
+          transform transition-all duration-200 ease-out
+          translate-y-0 opacity-100
+          animate-[langModalIn_.20s_ease-out]
+        "
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3 px-5 py-4">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+              Choose language
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-white/60">
+              Search and select your preferred language
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full bg-white/70 p-2 shadow-sm transition hover:bg-white hover:shadow
+                       dark:bg-white/10 dark:hover:bg-white/20"
+            aria-label="Close"
+          >
+            <span className="text-gray-800 dark:text-white">✕</span>
+          </button>
+        </div>
+
+        {/* Search (✅ search input) */}
+        <div className="px-5 pb-3">
+          <div
+            className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white/70 px-3 py-2
+                          dark:border-white/10 dark:bg-white/10"
+          >
+            <span className="text-gray-500 dark:text-white/60">🔎</span>
+            <input
+              ref={searchRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search language…"
+              className="w-full bg-transparent text-sm outline-none text-gray-900 placeholder:text-gray-400
+                         dark:text-white dark:placeholder:text-white/40"
+            />
+          </div>
+        </div>
+
+        {/* List */}
+        <div className="px-5 pb-5">
+          <div className="grid gap-2">
+            {filtered.map((l) => {
+              const active = l.code === currentLang;
+              const Flag = l.Flag;
+
+              return (
+                <button
+                  key={l.code}
+                  type="button"
+                  onClick={() => onSelect(l.code)}
+                  className={[
+                    "flex items-center justify-between rounded-2xl px-4 py-3 text-left",
+                    "transition duration-200 border",
+                    "hover:shadow-sm",
+                    active
+                      ? "border-blue-500 bg-blue-50/80"
+                      : "border-gray-200 bg-white/70 hover:bg-white",
+                    "dark:bg-white/10 dark:border-white/10 dark:hover:bg-white/15",
+                    active ? "dark:border-blue-400 dark:bg-blue-500/15" : "",
+                  ].join(" ")}
+                >
+                  <div className="flex items-center gap-3">
+                    {/* ✅ SVG flag */}
+                    <Flag className="h-6 w-6" />
+                    <div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">
+                        {l.label}
+                      </div>
+                      <div className="text-xs uppercase tracking-wide text-gray-500 dark:text-white/50">
+                        {l.code}
+                      </div>
+                    </div>
+                  </div>
+
+                  {active ? (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white shadow">
+                      ✓ Active
+                    </span>
+                  ) : (
+                    <span className="text-xs font-medium text-gray-400 dark:text-white/40">
+                      Select →
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+
+            {filtered.length === 0 && (
+              <div
+                className="rounded-2xl border border-dashed border-gray-300 bg-white/60 p-4 text-sm text-gray-600
+                              dark:border-white/15 dark:bg-white/5 dark:text-white/60"
+              >
+                No languages found.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* CSS animation keyframes via Tailwind arbitrary */}
+        <style>{`
+          @keyframes langModalIn {
+            from { transform: translateY(14px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+}
 const Navbar = ({ key, setProducts, setKeywords }) => {
   const quantity = useSelector((state) => state.cart.quantity);
 
@@ -229,6 +460,22 @@ const Navbar = ({ key, setProducts, setKeywords }) => {
       });
   };
   // console.log(cart);
+
+  const [open, setOpen] = useState(false);
+  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
+
+  const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
+
+  function changeLanguage(code) {
+    localStorage.setItem("lang", code);
+    i18n.changeLanguage(code);
+    setOpen(false);
+  }
+
+  useEffect(() => {
+    // sync initial i18next language from local storage
+    if (i18n?.changeLanguage && lang) i18n.changeLanguage(lang);
+  }, []); // run once
   return (
     <Container>
       <div className="header__inner">
@@ -333,6 +580,108 @@ const Navbar = ({ key, setProducts, setKeywords }) => {
               <span />
             </span>
           </button>
+          <div className="relative flex items-center">
+            {/* Tooltip wrapper */}
+            <div className="group relative">
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="
+        relative inline-flex h-10 w-10 items-center justify-center
+        rounded-full border border-gray-200/70 bg-white/70
+        shadow-sm backdrop-blur-xl
+        transition-all duration-200 ease-out
+        hover:-translate-y-[1px] hover:bg-white hover:shadow-md
+        active:translate-y-0 active:shadow-sm
+
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2
+        focus-visible:ring-offset-white
+
+        dark:border-white/10 dark:bg-white/10 dark:hover:bg-white/15
+        dark:focus-visible:ring-blue-400/70 dark:focus-visible:ring-offset-zinc-950
+      "
+                aria-label="Change language"
+                aria-haspopup="dialog"
+                aria-expanded={open}
+              >
+                {/* subtle glow ring on hover */}
+                <span
+                  className="
+          pointer-events-none absolute inset-0 rounded-full
+          ring-0 ring-blue-500/0 transition
+          group-hover:ring-2 group-hover:ring-blue-500/20
+          dark:group-hover:ring-blue-400/20
+        "
+                />
+
+                {/* Active language dot */}
+                <span
+                  className="
+          absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full
+          bg-emerald-500 shadow-sm
+          ring-2 ring-white
+          dark:ring-zinc-950
+        "
+                  title="Language set"
+                />
+
+                {/* Flag Icon with hover scale */}
+                <span className="transition-transform duration-200 group-hover:scale-110">
+                  <current.Flag className="h-5 w-5" />
+                </span>
+
+                {/* Arrow bubble bottom-right */}
+                <span
+                  className="
+          absolute -bottom-1 -right-1
+          flex h-4 w-4 items-center justify-center
+          rounded-full border border-gray-200 bg-white
+          text-[10px] text-gray-500 shadow-sm
+          transition
+          dark:border-white/10 dark:bg-zinc-900 dark:text-white/60
+        "
+                >
+                  <span
+                    className={[
+                      "inline-block transition-transform duration-200",
+                      open ? "rotate-180" : "rotate-0",
+                    ].join(" ")}
+                  >
+                    ▾
+                  </span>
+                </span>
+              </button>
+
+              {/* Tooltip */}
+              <div
+                className="
+        pointer-events-none absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2
+        whitespace-nowrap rounded-lg bg-zinc-900 px-2 py-1
+        text-xs font-semibold text-white
+        opacity-0 shadow-lg transition
+        group-hover:opacity-100
+        dark:bg-black
+      "
+              >
+                Language
+                <span
+                  className="
+          absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2
+          h-2 w-2 rotate-45 bg-zinc-900
+          dark:bg-black
+        "
+                />
+              </div>
+            </div>
+
+            {/* Modal */}
+            <LanguageModalExcellent
+              open={open}
+              onClose={() => setOpen(false)}
+              currentLang={lang}
+              onSelect={changeLanguage}
+            />
+          </div>
 
           <Language>EN</Language>
           {/* keep your icons if you want */}
