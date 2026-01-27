@@ -15,19 +15,15 @@ export default function ProductList() {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.product.products);
 
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
    const [confirmDialog, setConfirmDialog] = useState({isOpen:false, title:"", subTitle: ""})
 
   const handleDelete = (id) => {
-    //setData(data.filter((item) => item.id !== id));
-    // if(window.confirm("Are you sure you want to delete this record?")) {
-    //   deleteProduct(id, dispatch);
-    //   setNotify({
-    //     isOpen: true,
-    //     message: "Deleted Succesfully",
-    //     type: "error",
-    //   });
-    // }
      setConfirmDialog({
       ...confirmDialog,
       isOpen:false
