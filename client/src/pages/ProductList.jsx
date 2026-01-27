@@ -54,8 +54,6 @@ const ProductList = () => {
   return (
     <Container>
       <Annoucement />
-      <Navbar />
-      <Title>{category}</Title>
       <FilterContainer>
         <Filter>
           <FilterText>Filter Products: </FilterText>
