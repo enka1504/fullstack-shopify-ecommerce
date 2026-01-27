@@ -15,11 +15,6 @@ export default function ProductList() {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.product.products);
 
-  const [notify, setNotify] = useState({
-    isOpen: false,
-    message: "",
-    type: "",
-  });
 
    const [confirmDialog, setConfirmDialog] = useState({isOpen:false, title:"", subTitle: ""})
 
