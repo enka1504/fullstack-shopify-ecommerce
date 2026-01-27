@@ -35,9 +35,6 @@ const Select = styled.select`
 `;
 const Option = styled.option``;
 
-const ProductList = () => {
-  //const location = useParams().category;
-  const location = useLocation();
   const category = location.pathname.split("/")[2];
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState("newest");
