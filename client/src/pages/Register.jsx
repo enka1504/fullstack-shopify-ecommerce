@@ -228,7 +228,7 @@ export default function Register() {
               label="Full name"
               name="fullName"
               type="text"
-              placeholder="Tony Stark"
+              placeholder="Javior Stark"
               value={form.fullName}
               onChange={onChange}
               onBlur={onBlur}
@@ -239,7 +239,7 @@ export default function Register() {
               label="Username"
               name="username"
               type="text"
-              placeholder="tony_dev"
+              placeholder="javior_dev"
               value={form.username}
               onChange={onChange}
               onBlur={onBlur}
